@@ -52,9 +52,62 @@ describe('Fortune server >>', function() {
         client.socket.connected.should.be.true;
         done();
     });
+  });
 
+  describe('Socket.io Fortune Queries >>', function() {
+    var client;
 
+    before(function(done) {
+      client = sio.connect(sUrl, opts);
+      client.on('connect', function(data) {
+        done();
+      });
+    });
 
+    after(function(done) {
+      if (client.socket.connected) {
+        client.disconnect();
+      }
+      done();
+    });
+
+    describe('Using one connection >>', function(done) {
+      it('Search with default options', function(done) {
+        var options = {};
+
+        client.emit('search', options, function(data) {
+          data.should.be.an.instanceOf(Array);
+          should.strictEqual(data.length, 10);
+          done();
+        });
+      });
+
+      it('Search for 4 men', function(done) {
+        var options = {};
+        options.term = 'men';
+        options.max = 4;
+
+        client.emit('search', options, function(data) {
+          should.strictEqual(data.length, 4);
+          done();
+        });
+      });
+
+      it('Random with options', function(done) {
+        var options = {};
+        options.term = 'men';
+        options.max = 4;
+        options.isShort = true;
+
+        client.emit('random', options, function(data) {
+          data.should.be.a('string');
+          / men /i.test(data).should.be.true;
+          data.length.should.be.below(161);
+          done();
+        });
+      });
+
+    });
   });
 });
 

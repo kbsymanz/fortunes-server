@@ -9,9 +9,10 @@
 var express = require('express')
   , app = express()
   , server = require('http').createServer(app)
-  , fortunes = require('socket.io').listen(server).of('/fortunes')
+  , fio = require('socket.io').listen(server).of('/fortunes')
   , program = require('commander')
   , path = require('path')
+  , fortunes = require('fortunes')
   , defaultPort = 9000
   ;
 
@@ -31,14 +32,32 @@ var port = program.port
   ;
 
 // --------------------------------------------------------
-// Log to stdout what is being requested.
+// Log to stdout what is being requested for regular requests.
 // --------------------------------------------------------
 app.use(function(req, res, next) {
   console.log('%s: %s', req.method, req.url);
   next();
 });
-fortunes.on('connection', function(socket) {
+
+
+// --------------------------------------------------------
+// Interface to the fortunes module via Socket.io.
+// --------------------------------------------------------
+fio.on('connection', function(socket) {
   console.log('Connection established: %s', socket.store.id);
+
+  socket.on('search', function(options, cb) {
+    fortunes.search(options, function(data) {
+      cb(data);
+    });
+  });
+
+  socket.on('random', function(options, cb) {
+    fortunes.random(options, function(data) {
+      cb(data);
+    });
+  });
+
 });
 
 // --------------------------------------------------------
