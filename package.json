@@ -23,5 +23,10 @@
     "fortunes": "0.0.3",
     "commander": "~1.1.1",
     "socket.io": "~0.9.14"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*",
+    "socket.io-client": "*"
   }
 }

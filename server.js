@@ -8,13 +8,16 @@
 
 var express = require('express')
   , app = express()
+  , server = require('http').createServer(app)
+  , fortunes = require('socket.io').listen(server).of('/fortunes')
   , program = require('commander')
   , path = require('path')
+  , defaultPort = 9000
   ;
 
 program
-  .usage('node server.js [-p 9000] clientDirectory1 [clientDir2 clientDir3 ...]')
-  .option('-p, --port [port]', 'Specify the port to listen on (default 8050)')
+  .usage('node server.js [-p ' + defaultPort + '] clientDirectory1 [clientDir2 clientDir3 ...]')
+  .option('-p, --port [port]', 'Specify the port to listen on (default ' + defaultPort + ')', defaultPort)
   .parse(process.argv)
   ;
 
@@ -34,6 +37,9 @@ app.use(function(req, res, next) {
   console.log('%s: %s', req.method, req.url);
   next();
 });
+fortunes.on('connection', function(socket) {
+  console.log('Connection established: %s', socket.store.id);
+});
 
 // --------------------------------------------------------
 // Static resources.
@@ -47,6 +53,6 @@ app.all('*', function(req, res) {
   res.sendfile(indexFile);
 });
 
-app.listen(port);
+server.listen(port);
 console.log('Serving static: %s', clientDir);
 console.log('Listening on port %d', port);
