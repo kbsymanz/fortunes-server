@@ -17,7 +17,7 @@ var express = require('express')
   ;
 
 program
-  .usage('node server.js [-p ' + defaultPort + '] clientDirectory1 [clientDir2 clientDir3 ...]')
+  .usage('node server.js [-p ' + defaultPort + '] clientDirectory1')
   .option('-p, --port [port]', 'Specify the port to listen on (default ' + defaultPort + ')', defaultPort)
   .parse(process.argv)
   ;
@@ -47,12 +47,20 @@ fio.on('connection', function(socket) {
   console.log('Connection established: %s', socket.store.id);
 
   socket.on('search', function(options, cb) {
+    if (typeof cb === 'undefined' && typeof options === 'function') {
+      cb = options;
+      options = {};
+    }
     fortunes.search(options, function(data) {
       cb(data);
     });
   });
 
   socket.on('random', function(options, cb) {
+    if (typeof cb === 'undefined' && typeof options === 'function') {
+      cb = options;
+      options = {};
+    }
     fortunes.random(options, function(data) {
       cb(data);
     });

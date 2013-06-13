@@ -72,6 +72,15 @@ describe('Fortune server >>', function() {
     });
 
     describe('Using one connection >>', function(done) {
+      it('Search with no options object', function(done) {
+
+        client.emit('search', function(data) {
+          data.should.be.an.instanceOf(Array);
+          should.strictEqual(data.length, 10);
+          done();
+        });
+      });
+
       it('Search with default options', function(done) {
         var options = {};
 
