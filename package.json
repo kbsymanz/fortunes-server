@@ -1,6 +1,6 @@
 {
   "name": "fortunes-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Server for various client example applications as a proof of concept. Data comes from the fortunes module.",
   "main": "server.js",
   "scripts": {
@@ -22,7 +22,8 @@
     "express": "~3.2.6",
     "fortunes": "0.0.3",
     "commander": "~1.1.1",
-    "socket.io": "~0.9.14"
+    "socket.io": "~0.9.14",
+    "underscore": "*"
   },
   "devDependencies": {
     "mocha": "*",

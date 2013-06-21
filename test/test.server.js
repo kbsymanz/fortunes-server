@@ -116,6 +116,24 @@ describe('Fortune server >>', function() {
         });
       });
 
+      it('Random with callback at intervals', function(done) {
+        this.timeout(7000);
+        var options = {};
+        options.term = 'people';
+        options.isShort = true;
+        options.interval = 2;
+
+        client.emit('random', options, function(key) {
+          var cnt = 0;
+          client.on(key, function(data) {
+            cnt++;
+            if (cnt > 2) {
+              done();
+            }
+          });
+        });
+      });
+
     });
   });
 });
