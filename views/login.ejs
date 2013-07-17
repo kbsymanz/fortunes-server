@@ -1,0 +1,52 @@
+<% var title = 'Fortunes Login' %>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <style>
+      body {
+        padding: 50px;
+        font: 13px Helvetica, Arial, sans-serif;
+      }
+      .error {
+          color: red
+      }
+      .success {
+          color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Login with one of the following accounts (username/password):</p>
+    <ul>
+      <li>user1 / testuser1</li>
+      <li>user2 / testuser2</li>
+      <li>user3 / testuser3</li>
+      <li>user4 / testuser4</li>
+    </ul>
+    <form method="post" action="/login">
+      <p>
+        <label>Username:</label>
+        <input type="text" name="username">
+      </p>
+      <p>
+        <label>Password:</label>
+        <input type="password" name="password">
+      </p>
+      <p>
+        <input type="submit" value="Login">
+      </p>
+      <input type="hidden" name="_csrf" value="<%= token %>">
+    </form>
+    <p>Sample application using:</p>
+    <ul>
+      <li>Backbone</li>
+      <li>Requirejs</li>
+      <li>One of: Chaplinjs, Marionette, or Aura</li>
+      <li>Socketio</li>
+      <li>Passportjs</li>
+      <li>Bootstrap</li>
+    </ul>
+  </body>
+</html>
