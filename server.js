@@ -20,6 +20,7 @@ var express = require('express')
   , program = require('commander')
   , _ = require('underscore')
   , path = require('path')
+  , fs = require('fs')
   , passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy
   , SessionSockets = require('session.socket.io')
@@ -185,6 +186,14 @@ app.post(loginRoute, function(req, res, next) {
       return res.redirect('/');
     });
   })(req, res, next);
+});
+
+// --------------------------------------------------------
+// For all history routes, since those are client side only
+// and specific to each client, just serve the main page.
+// --------------------------------------------------------
+app.get('/history/:id', function(req, res) {
+  res.redirect('/');
 });
 
 // ========================================================
