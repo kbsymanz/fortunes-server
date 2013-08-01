@@ -263,7 +263,7 @@ var sessionExpired = function(socket) {
 // ========================================================
 // ========================================================
 sessionSockets.of('/fortunes').on('connection', function(err, socket, session) {
-  var user
+  var userId
     , sockId
     ;
 
@@ -283,18 +283,18 @@ sessionSockets.of('/fortunes').on('connection', function(err, socket, session) {
   // --------------------------------------------------------
   // Shortcuts.
   // --------------------------------------------------------
-  user = session.passport.user;
+  userId = session.passport.user;
   sockId = socket.store.id;
 
   // --------------------------------------------------------
   // Store some transient information about current users for
   // this server process.
   // --------------------------------------------------------
-  currUsers[user] = {
+  currUsers[userId] = {
     socket: sockId
     , intervals: {}
   };
-  console.log('Connection established: %s/%s', user, sockId);
+  console.log('Connection established: %s/%s', userId, sockId);
 
   // --------------------------------------------------------
   // Prepare a place in the session to track user jobs.
@@ -320,15 +320,31 @@ sessionSockets.of('/fortunes').on('connection', function(err, socket, session) {
     // --------------------------------------------------------
     // Clear any setIntervals() that were in place for this socket.
     // --------------------------------------------------------
-    if (currUsers[user]) {
-      console.log('Clearing intervals for user %s', user);
-      _.each(currUsers[user].intervals, function(val, key) {
+    if (currUsers[userId]) {
+      console.log('Clearing intervals for user %s', userId);
+      _.each(currUsers[userId].intervals, function(val, key) {
         console.log('Cleared interval: %s', key);
         clearInterval(val);
         numSetIntervals--;
       });
-      delete currUsers[user];
+      delete currUsers[userId];
     }
+  });
+
+  // --------------------------------------------------------
+  // Return the username is to the client.
+  // --------------------------------------------------------
+  socket.on('whoami', function(cb) {
+    if (! _.isFunction(cb)) {
+      return console.log('Error: whoami called without a callback.');
+    }
+    findById(userId, function(err, user) {
+      if (err) {
+        console.log(err);
+        return cb(err);
+      }
+      cb(null, user.username);
+    });
   });
 
   // --------------------------------------------------------
@@ -395,7 +411,7 @@ sessionSockets.of('/fortunes').on('connection', function(err, socket, session) {
       // stored here since it contains circular references and it
       // does not stringify properly.
       // --------------------------------------------------------
-      clientJob.user = user;
+      clientJob.userId = userId;
       clientJob.options = options;
       clientJob.key = randomKey;
       session.jobs[randomKey] = clientJob;
@@ -405,7 +421,7 @@ sessionSockets.of('/fortunes').on('connection', function(err, socket, session) {
       // Store the interval key so that the interval can be
       // cancelled when the clients disconnect.
       // --------------------------------------------------------
-      currUsers[user].intervals[randomKey] = intervalKey;
+      currUsers[userId].intervals[randomKey] = intervalKey;
 
       // --------------------------------------------------------
       // Let the client know what message to listen for.
