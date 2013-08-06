@@ -6,16 +6,20 @@ Server for various client example applications as a proof of concept. Data comes
 
 - Nodejs application server
     - Express 3.x
-    - Serves fortunes (see: https://github.com/kbsymanz/fortunes)
+    - Serves fortunes using the [Fortunes](https://github.com/kbsymanz/fortunes) module
     - Socketio communications with the clients
 
 ## Prerequisites
 
-Due to the prerequisites of the fortunes package, this application is designed to be run on Linux. It has been tested on Ubuntu 12.04 but various other flavors may very well work, or other Unixes, etc.
+Due to the prerequisites of the [fortunes](https://github.com/kbsymanz/fortunes) package, this application is designed to be run on Linux where a native fortunes package needs to be installed. It has been tested on Ubuntu 12.04 but various other flavors may very well work, or other Unixes, etc.
 
-__The fortunes module (installed with ```npm install```) has a prerequisite for the Ubuntu fortune-mod package.__
+On Ubuntu:
 
-## Installation
+    sudo apt-get install fortune-mod
+
+It essence, it is assumed that the server has a working ```fortune``` command. Make that happen and the Fortunes module should work.
+
+## Installation (after prerequisites are satisfied)
 
     git clone https://github.com/kbsymanz/fortunes-server
     cd fortunes-server
@@ -25,22 +29,55 @@ __The fortunes module (installed with ```npm install```) has a prerequisite for 
 
     node server.js [-p port] clientDirectory
 
-Server listens on the localhost, port 9000 by default. Use -p to change the port. Browse to: http://localhost:9000.
+Server listens on the localhost, port 9000 by default. Use -p to change the port. Browse to: http://127.0.01:9000.
 
 The clientDirectory is the directory which will be exposed via http as static files through Express. It is expected that an ```index.html``` file exists in this directory. This file will be served for all http routes.
 
+Known valid clients include:
+
+- [fortunes-chaplin](https://github.com/kbsymanz/fortunes-chaplin)
+- fortunes-aura (coming ...)
+- fortunes-marionette (coming ...)
+
+For example, assuming that you are in the fortunes-server directory and the fortunes-chaplin project shares the same parent directory:
+
+    node server.js -p 8888 ../fortunes-chaplin/
+    
+
 ## API
 
-The server responds to Socket.io requests from the client (it is assumed that the client is loaded from the clientDirectory in index.html). The client emits either a ```search``` or ```random``` message, sending along an options object (optional) and a callback.
+The server responds to Socket.io requests from the client. The client emits either a ```search```, ```random```, or a ```whoami``` message in the ```fortunes``` channel.
 
-See test/test.server.js for examples.
+### search
+
+Searches for fortunes that contain specified terms. Returns an array of matches.
+
+Params:
+
+- options: see the [fortunes](https://github.com/kbsymanz/fortunes) module for valid options because the options that the server receives are passed straight through. The known valid clients mentioned above already send a subset of these options.
+- callback
+
+### random
+
+Returns a random fortune unless an interval is specified in which case it will return a key for the client to listen on that the server will use to emit messages at regular intervals to the client.
+
+Params:
+
+- options: see the [fortunes](https://github.com/kbsymanz/fortunes) module for valid options because the options that the server receives are passed straight through. The known valid clients mentioned above already send a subset of these options.
+  - options.interval: the number of seconds between server emits of a single fortune to the client.
+- callback
+
+### whoami
+
+Returns the username that the server thinks that the client represents.
+
+Params:
+
+- callback
 
 ## Testing
 
-Start the server in another terminal, then:
-
-    mocha test/test.server.js
-
+**TODO:** Get test suite working again after bringing Passportjs and Session.socket.io into the project.
 
 ## License
 
