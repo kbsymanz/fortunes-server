@@ -36,7 +36,7 @@ The clientDirectory is the directory which will be exposed via http as static fi
 Known valid clients include:
 
 - [fortunes-chaplin](https://github.com/kbsymanz/fortunes-chaplin)
-- fortunes-aura (coming ...)
+- [fortunes-aura](https://github.com/kbsymanz/fortunes-aura)
 - fortunes-marionette (coming ...)
 
 For example, assuming that you are in the fortunes-server directory and the fortunes-chaplin project shares the same parent directory:
